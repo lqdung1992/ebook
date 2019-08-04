@@ -189,10 +189,10 @@ class PageController extends Controller
         } else {
             // Linux : hiện tại sài http://34.87.60.191
             // same as request api
-            $link = urlencode(
-                'http://34.87.60.191/public/read-pdf-linux/' .
-                public_path('upload/content/'.$fileName) .
-                '/' . $pageNum
+            $link =
+                'http://34.87.60.191/public/read-pdf-linux' . '?' .
+                urlencode('urlFileName='.public_path('upload/content/'.$fileName) .
+                '&pageNum=' . $pageNum
             );
 
             $client = new Client();
@@ -210,8 +210,14 @@ class PageController extends Controller
      * @param Request $request
      * @param $urlFileName
      */
-    public function readOnLinux(Request $request, $urlFileName, $pageNum = 1)
+    public function readOnLinux(Request $request)
     {
+        $urlFileName = $request->get('urlFileName');
+        if (empty($urlFileName)) {
+            throw new NotFoundHttpException();
+        }
+        $pageNum = $request->get('pageNum', 1);
+
         if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
             // pdftohtml_path để default trên môi trường linux
             $pdf = new Pdf($urlFileName, [
@@ -228,12 +234,32 @@ class PageController extends Controller
         }
     }
 
+    /**
+     * @param $pdf
+     * @return string
+     */
+    protected function formatPdfHtml(Pdf $pdf, $pageNumber = 1)
+    {
+        if ($pageNumber > $pdf->countPages()) {
+            $pageNumber = $pdf->countPages();
+        }
+        //Lấy nội dung theo trang
+        // chỉnh sửa format chung ở đây
+        return '<div align=\'center\'>'.$pdf->getHtml()->getPage($pageNumber)."</div>";
+//        foreach ($pdf->getHtml()->getAllPages() as $page) {
+//            $message = "<div align='center'>";
+//            $message .= $page . "<br>";
+//            $message .= "</div>";
+//        }
+//        return $message;
+    }
+
     public function convertText($id, $bookmark)
     {
 
         $ebook = tblebook::find($id);
         $isFree = false;
-    
+
         // free dưới 10 page
         if ($ebook->hire_price == 0 || $bookmark <= 10) {
             $isFree = true;
@@ -287,25 +313,5 @@ class PageController extends Controller
 
         // return response()->json(['message' => 'error', 'error' => 'Cannot find that page!'], 404);
         echo "chạy tới cuoi cung";
-    }
-
-    /**
-     * @param $pdf
-     * @return string
-     */
-    protected function formatPdfHtml(Pdf $pdf, $pageNumber = 1)
-    {
-        if ($pageNumber > $pdf->countPages()) {
-            $pageNumber = $pdf->countPages();
-        }
-        //Lấy nội dung theo trang
-        // chỉnh sửa format chung ở đây
-        return '<div align=\'center\'>'.$pdf->getHtml()->getPage($pageNumber)."</div>";
-//        foreach ($pdf->getHtml()->getAllPages() as $page) {
-//            $message = "<div align='center'>";
-//            $message .= $page . "<br>";
-//            $message .= "</div>";
-//        }
-//        return $message;
     }
 }
