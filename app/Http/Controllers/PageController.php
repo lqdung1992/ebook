@@ -187,18 +187,17 @@ class PageController extends Controller
             $message = $this->formatPdfHtml($pdf, $pageNum);
             echo $message;
         } else {
-            // Linux : hiện tại sài http://34.87.60.191
-            // same as request api
-            $link =
-                'http://34.87.60.191/public/read-pdf-linux' . '?urlFileName=' .
-                urlencode(public_path('upload/content/'.$fileName)) .
-                '&pageNum=' . $pageNum;
+            // linux only
+            $pdf = new Pdf($fileName, [
+                'clearAfter' => false,
+                'generate' => ['singlePage' => true],
+                'outputDir' => storage_path('upload/content'), // thư mục output của file html
+            ]);
 
-            $client = new Client();
-            $res = $client->get($link);
-            echo $res->getBody(); // html của pdf
+            $message = $this->formatPdfHtml($pdf, $pageNum);
+
+            echo $message;
         }
-//        $url = $request->getUri();
 
         //return $allpages;//$contentFirstPage;//$countPages;//dd($pdfInfo);
 //        return view('user.pages.test',['pdfInfor']=$pdfInfo);

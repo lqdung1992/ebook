@@ -33,7 +33,8 @@
 				                          <tr>
 											<td class="thumb"><img src="upload/ebook/{{$v->image}}" alt=""></td>
 											<td class="details">
-												<a href="{{url('doc', ['id' => $v->id, 'pageNum' => $v->bookmark]) }}">{{$v->name}}</a>
+												<a href="{{url('doc', ['id' => $v->id]) }}">{{$v->name}}</a>
+{{--												<a href="{{url('doc_page', ['id' => $v->id, 'pageNum' => $v->bookmark]) }}">{{$v->name}}</a>--}}
 												{{--<a href="testpdf">{{$v->name}}</a>--}}
 											</td>
 											<td class="price text-center"><strong>{{number_format($v->hire_price)}}</strong></td>
@@ -42,7 +43,8 @@
 										  <tr style="background-color: #A9A9A9">
 											<td class="thumb"><img src="upload/ebook/{{$v->image}}" alt=""></td>
 											<td class="details">
-												<a href="{{url('doc', ['id' => $v->id, 'pageNum' => $v->bookmark]) }}">{{$v->name}}</a>
+												<a href="{{url('doc', ['id' => $v->id]) }}">{{$v->name}}</a>
+{{--												<a href="{{url('doc_page', ['id' => $v->id, 'pageNum' => $v->bookmark]) }}">{{$v->name}}</a>--}}
 												{{--{{$v->name}}--}}
 											</td>
 											<td class="price text-center"><strong>{{number_format($v->hire_price)}}</strong></td>
