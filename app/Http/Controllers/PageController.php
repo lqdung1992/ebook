@@ -149,28 +149,43 @@ class PageController extends Controller
 
 //---------------------confif chuyển file pdf/////////////////////////
     public function convertPDF()
-    {   
+    {
+        $filePath = 'upload/content/1w_QUY-DINH-CUONG-LUAN-VAN.pdf';
 
-        $pdf = new Pdf('upload/content/1w_QUY-DINH-CUONG-LUAN-VAN.pdf', [
-        'pdftohtml_path' => 'backend\poppler-0.68.0\bin\pdftohtml', // đường dẫn của `pdf to html` sau khi cài đặt
-        'pdfinfo_path' => 'backend\poppler-0.68.0\bin\pdfinfo', // đường dẫn của `pdf info` sau khi cài đặt
-        'clearAfter' => false, // xóa file pdf sau khi convert - mặc định là true
-        'outputDir' => storage_path('upload/content'), // thư mục output của file html
-        ]);
+        // nếu là window thì sài package đính kèm, nếu là linux thì phải cài gói poppler, hiện server linux đã cài rồi.
+        // giờ làm xog thì commit code lên github, anh sẽ clone về cho
+        // hiện tại sài http://34.87.60.191/public/testpdf mới đọc được nha.
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+//            echo 'This is a server using Windows!';
+            $pdf = new Pdf($filePath, [
+                'pdftohtml_path' => 'backend\poppler-0.68.0\bin\pdftohtml', // đường dẫn của `pdf to html` sau khi cài đặt
+                'pdfinfo_path' => 'backend\poppler-0.68.0\bin\pdfinfo', // đường dẫn của `pdf info` sau khi cài đặt
+                'clearAfter' => false, // xóa file pdf sau khi convert - mặc định là true
+                'outputDir' => storage_path('upload/content'), // thư mục output của file html
+            ]);
+        } else {
+//            echo 'This is a server not using Windows!';
+            // pdftohtml_path để default trên môi trường linux
+            $pdf = new Pdf($filePath, [
+                'clearAfter' => false, // xóa file pdf sau khi convert - mặc định là true
+                'outputDir' => storage_path('upload/content'), // thư mục output của file html
+            ]);
+        }
 
         $pdfInfo = $pdf->getInfo(); // Lấy thông tin của file pdf
         $countPages = $pdf->countPages(); // đếm số trang của file pdf
         $contentFirstPage = $pdf->getHtml()->getPage(1); //Lấy nội dung tất cả các trang
-        
+
 
         //Lấy nội dung tất cả các trang
-        // foreach ($pdf->getHtml()->getAllPages() as $page) {
-        //     echo "<div align='center'>";
-        //     echo $page."<br>";
-        //     echo "</div>";
-        //  }
+        foreach ($pdf->getHtml()->getAllPages() as $page) {
+            echo "<div align='center'>";
+            echo $page."<br>";
+            echo "</div>";
+        }
+
         //return $allpages;//$contentFirstPage;//$countPages;//dd($pdfInfo);
-        //return view('user.pages.test',['pdfInfor']=$pdfInfo);
+//        return view('user.pages.test',['pdfInfor']=$pdfInfo);
     }
 
     public function convertText($id, $bookmark)
