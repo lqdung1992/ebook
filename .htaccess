@@ -1,0 +1,21 @@
+DirectoryIndex index.php index.html .ht
+
+<FilesMatch "^composer|^COPYING|^\.env|^Procfile|^app\.json|^gulpfile\.js|^package\.json|^package-lock\.json|web\.config|\.(ini|lock|dist|git|sh|bak|swp|env|twig|yml|yaml)$">
+    order allow,deny
+    deny from all
+</FilesMatch>
+
+<Files ~ "index.php">
+    order deny,allow
+    allow from all
+</Files>
+
+<IfModule mod_rewrite.c>
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.php?/$1 [L]
+
+</IfModule>
+
