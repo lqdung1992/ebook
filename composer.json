@@ -12,7 +12,6 @@
         "laravel/passport": "~4.0",
         "laravel/tinker": "~1.0",
         "smalot/pdfparser": "^0.14.0",
-        "spatie/pdf-to-text": "^1.2",
         "tonchik-tm/pdf-to-html": "~1"
     },
     "require-dev": {
@@ -59,8 +58,5 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "optimize-autoloader": true
-    },
-    "json":{
-      "tonchik-tm/pdf-to-html":"~1"
     }
 }
