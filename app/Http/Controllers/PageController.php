@@ -171,8 +171,8 @@ class PageController extends Controller
             throw new NotFoundHttpException();
         }
         // nếu là window thì sài package đính kèm, nếu là linux thì phải cài gói poppler, hiện server linux đã cài rồi.
+        $filePath = 'upload/content/'.$fileName;
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $filePath = 'upload/content/'.$fileName;
             $pdf = new Pdf($filePath, [
                 'pdftohtml_path' => 'backend\poppler-0.68.0\bin\pdftohtml', // đường dẫn của `pdf to html` sau khi cài đặt
                 'pdfinfo_path' => 'backend\poppler-0.68.0\bin\pdfinfo', // đường dẫn của `pdf info` sau khi cài đặt
@@ -194,8 +194,9 @@ class PageController extends Controller
                 $body = $client->get($url);
                 echo $body->getBody();
             } else {
-                // linux only
-                $pdf = new Pdf($fileName, [
+
+                // linux envoriment only
+                $pdf = new Pdf($filePath, [
                     'clearAfter' => false,
                     'generate' => ['singlePage' => true],
                     'outputDir' => storage_path('upload/content'), // thư mục output của file html
