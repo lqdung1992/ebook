@@ -190,10 +190,9 @@ class PageController extends Controller
             // Linux : hiện tại sài http://34.87.60.191
             // same as request api
             $link =
-                'http://34.87.60.191/public/read-pdf-linux' . '?' .
-                urlencode('urlFileName='.public_path('upload/content/'.$fileName) .
-                '&pageNum=' . $pageNum
-            );
+                'http://34.87.60.191/public/read-pdf-linux' . '?urlFileName=' .
+                urlencode(public_path('upload/content/'.$fileName)) .
+                '&pageNum=' . $pageNum;
 
             $client = new Client();
             $res = $client->get($link);
@@ -220,6 +219,7 @@ class PageController extends Controller
 
         if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
             // pdftohtml_path để default trên môi trường linux
+            $urlFileName = urldecode($urlFileName);
             $pdf = new Pdf($urlFileName, [
                 'clearAfter' => false,
                 'generate' => ['singlePage' => true],
