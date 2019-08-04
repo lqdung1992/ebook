@@ -176,7 +176,6 @@ class PageController extends Controller
             $pdf = new Pdf($filePath, [
                 'pdftohtml_path' => 'backend\poppler-0.68.0\bin\pdftohtml', // đường dẫn của `pdf to html` sau khi cài đặt
                 'pdfinfo_path' => 'backend\poppler-0.68.0\bin\pdfinfo', // đường dẫn của `pdf info` sau khi cài đặt
-                'generate' => ['singlePage' => true],
                 'clearAfter' => false, // xóa file pdf sau khi convert - mặc định là true
                 'outputDir' => storage_path('upload/content'), // thư mục output của file html
             ]);
@@ -198,7 +197,6 @@ class PageController extends Controller
                 // linux envoriment only
                 $pdf = new Pdf($filePath, [
                     'clearAfter' => false,
-                    'generate' => ['singlePage' => true],
                     'outputDir' => storage_path('upload/content'), // thư mục output của file html
                 ]);
 
