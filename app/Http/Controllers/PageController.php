@@ -187,16 +187,24 @@ class PageController extends Controller
             $message = $this->formatPdfHtml($pdf, $pageNum);
             echo $message;
         } else {
-            // linux only
-            $pdf = new Pdf($fileName, [
-                'clearAfter' => false,
-                'generate' => ['singlePage' => true],
-                'outputDir' => storage_path('upload/content'), // thư mục output của file html
-            ]);
+            $url = $request->getUri();
+            if (strpos($url, '34.87.60.191') === false) {
+                $url = str_replace('nnebook.tk', '34.87.60.191');
+                $client = new Client();
+                $body = $client->get($url);
+                echo $body->getBody();
+            } else {
+                // linux only
+                $pdf = new Pdf($fileName, [
+                    'clearAfter' => false,
+                    'generate' => ['singlePage' => true],
+                    'outputDir' => storage_path('upload/content'), // thư mục output của file html
+                ]);
 
-            $message = $this->formatPdfHtml($pdf, $pageNum);
+                $message = $this->formatPdfHtml($pdf, $pageNum);
 
-            echo $message;
+                echo $message;
+            }
         }
 
         //return $allpages;//$contentFirstPage;//$countPages;//dd($pdfInfo);
