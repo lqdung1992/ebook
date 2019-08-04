@@ -189,7 +189,7 @@ class PageController extends Controller
         } else {
             $url = $request->getUri();
             if (strpos($url, '34.87.60.191') === false) {
-                $url = str_replace('nnebook.tk', '34.87.60.191');
+                $url = str_replace('nnebook.tk', '34.87.60.191', $url);
                 $client = new Client();
                 $body = $client->get($url);
                 echo $body->getBody();
