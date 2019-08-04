@@ -197,8 +197,13 @@ Route::get('chitietebook/{id}',[
 
 
 Route::post('timkiem','PageController@timkiem');
-Route::get('testpdf','PageController@convertPDF');
-Route::get('testpdf/{id}/{bookmark}', 'PageController@convertText');
+//Route::get('testpdf','PageController@convertPDF');
+//Route::get('testpdf/{id}/{bookmark}', 'PageController@convertText');
+
+Route::get('doc/{id}/{pageNum}', ['as' => 'doc', 'uses' => 'PageController@convertPDF']);
+//Route::get('doc/{id}/{pageNum}', ['as' => 'doc', 'uses' => 'PageController@convertPDF']);
+Route::get('read-pdf-linux/{urlFileName}/{pageNum}', ['as' => 'read-pdf-linux', 'uses' => 'PageController@readOnLinux']);
+
 
 //-----------------SET PASSWORD--------------------------------------------------
 use App\tbluser;

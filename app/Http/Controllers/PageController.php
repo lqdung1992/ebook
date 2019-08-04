@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Ebook;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\tblebook;
@@ -11,6 +13,7 @@ use App\tbllanguage;
 use App\tbltype;
 use App\User;
 use Mail;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use TonchikTm\PdfToHtml\Pdf;
 
 class PageController extends Controller
@@ -148,44 +151,81 @@ class PageController extends Controller
     }
 
 //---------------------confif chuyển file pdf/////////////////////////
-    public function convertPDF()
-    {
-        $filePath = 'upload/content/1w_QUY-DINH-CUONG-LUAN-VAN.pdf';
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @param int $pageNum số trang đang đọc
+     */
+    public function convertPDF(Request $request, $id, $pageNum = 1)
+    {
+        $ebook = Ebook::find($id);
+        if (!$ebook) {
+            throw new NotFoundHttpException();
+        }
+
+        // lấy từ ebook
+        $fileName = $ebook->link_content;
+        $fullPath = public_path('upload/content/' . $fileName);
+        if (!file_exists($fullPath)) {
+            throw new NotFoundHttpException();
+        }
         // nếu là window thì sài package đính kèm, nếu là linux thì phải cài gói poppler, hiện server linux đã cài rồi.
-        // giờ làm xog thì commit code lên github, anh sẽ clone về cho
-        // hiện tại sài http://34.87.60.191/public/testpdf mới đọc được nha.
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-//            echo 'This is a server using Windows!';
+            $filePath = 'upload/content/'.$fileName;
             $pdf = new Pdf($filePath, [
                 'pdftohtml_path' => 'backend\poppler-0.68.0\bin\pdftohtml', // đường dẫn của `pdf to html` sau khi cài đặt
                 'pdfinfo_path' => 'backend\poppler-0.68.0\bin\pdfinfo', // đường dẫn của `pdf info` sau khi cài đặt
+                'generate' => ['singlePage' => true],
                 'clearAfter' => false, // xóa file pdf sau khi convert - mặc định là true
                 'outputDir' => storage_path('upload/content'), // thư mục output của file html
             ]);
+
+//            $pdfInfo = $pdf->getInfo(); // Lấy thông tin của file pdf
+
+            //Lấy nội dung tất cả các trang
+            $message = $this->formatPdfHtml($pdf, $pageNum);
+            echo $message;
         } else {
-//            echo 'This is a server not using Windows!';
-            // pdftohtml_path để default trên môi trường linux
-            $pdf = new Pdf($filePath, [
-                'clearAfter' => false, // xóa file pdf sau khi convert - mặc định là true
-                'outputDir' => storage_path('upload/content'), // thư mục output của file html
-            ]);
+            // Linux : hiện tại sài http://34.87.60.191
+            // same as request api
+            $link = urlencode(
+                'http://34.87.60.191/public/read-pdf-linux/' .
+                public_path('upload/content/'.$fileName) .
+                '/' . $pageNum
+            );
+
+            $client = new Client();
+            $res = $client->get($link);
+            echo $res->getBody(); // html của pdf
         }
-
-        $pdfInfo = $pdf->getInfo(); // Lấy thông tin của file pdf
-        $countPages = $pdf->countPages(); // đếm số trang của file pdf
-        $contentFirstPage = $pdf->getHtml()->getPage(1); //Lấy nội dung tất cả các trang
-
-
-        //Lấy nội dung tất cả các trang
-        foreach ($pdf->getHtml()->getAllPages() as $page) {
-            echo "<div align='center'>";
-            echo $page."<br>";
-            echo "</div>";
-        }
+//        $url = $request->getUri();
 
         //return $allpages;//$contentFirstPage;//$countPages;//dd($pdfInfo);
 //        return view('user.pages.test',['pdfInfor']=$pdfInfo);
+    }
+
+    /**
+     * Chỉ hỗ trợ đọc trên linux
+     * @param Request $request
+     * @param $urlFileName
+     */
+    public function readOnLinux(Request $request, $urlFileName, $pageNum = 1)
+    {
+        if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
+            // pdftohtml_path để default trên môi trường linux
+            $pdf = new Pdf($urlFileName, [
+                'clearAfter' => false,
+                'generate' => ['singlePage' => true],
+                'outputDir' => storage_path('upload/content'), // thư mục output của file html
+            ]);
+
+            $message = $this->formatPdfHtml($pdf, $pageNum);
+
+            return $message;
+        } else {
+            throw new \Exception("hàm chỉ hỗ trợ Linux");
+        }
     }
 
     public function convertText($id, $bookmark)
@@ -249,4 +289,23 @@ class PageController extends Controller
         echo "chạy tới cuoi cung";
     }
 
+    /**
+     * @param $pdf
+     * @return string
+     */
+    protected function formatPdfHtml(Pdf $pdf, $pageNumber = 1)
+    {
+        if ($pageNumber > $pdf->countPages()) {
+            $pageNumber = $pdf->countPages();
+        }
+        //Lấy nội dung theo trang
+        // chỉnh sửa format chung ở đây
+        return '<div align=\'center\'>'.$pdf->getHtml()->getPage($pageNumber)."</div>";
+//        foreach ($pdf->getHtml()->getAllPages() as $page) {
+//            $message = "<div align='center'>";
+//            $message .= $page . "<br>";
+//            $message .= "</div>";
+//        }
+//        return $message;
+    }
 }
