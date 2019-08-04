@@ -12,3 +12,5 @@ yarn-error.log
 .env
 .vs/
 tests/
+adminer.php
+phpMyAdmin/*
