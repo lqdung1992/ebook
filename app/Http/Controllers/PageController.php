@@ -246,18 +246,18 @@ class PageController extends Controller
      */
     protected function formatPdfHtml(Pdf $pdf, $pageNumber = 1)
     {
-        if ($pageNumber > $pdf->countPages()) {
-            $pageNumber = $pdf->countPages();
-        }
+//         if ($pageNumber > $pdf->countPages()) {
+//             $pageNumber = $pdf->countPages();
+//         }
         //Lấy nội dung theo trang đổi thành lấy tất cả các trang
         // chỉnh sửa format chung ở đây    
-//         return '<div align=\'center\'>'.$pdf->getHtml()->getPage($pageNumber)."</div>";
        foreach ($pdf->getHtml()->getAllPages() as $page) {
            $message = "<div align='center'>";
            $message .= $page . "<br>";
            $message .= "</div>";
        }
        return $message;
+        //         return '<div align=\'center\'>'.$pdf->getHtml()->getPage($pageNumber)."</div>";
     }
 
     public function convertText($id, $bookmark)
