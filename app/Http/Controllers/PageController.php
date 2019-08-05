@@ -250,12 +250,11 @@ class PageController extends Controller
 //         }
         //Lấy nội dung theo trang đổi thành lấy tất cả các trang
         // chỉnh sửa format chung ở đây    
-        $message = '';
+        $message = "<div align='center'>";
        foreach ($pdf->getHtml()->getAllPages() as $page) {
-           $message = "<div align='center'>";
            $message .= $page . "<br>";
-           $message .= "</div>";
        }
+        $message .= "</div>";
        return $message;
         //         return '<div align=\'center\'>'.$pdf->getHtml()->getPage($pageNumber)."</div>";
     }
