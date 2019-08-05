@@ -249,15 +249,15 @@ class PageController extends Controller
         if ($pageNumber > $pdf->countPages()) {
             $pageNumber = $pdf->countPages();
         }
-        //Lấy nội dung theo trang
-        // chỉnh sửa format chung ở đây
-        return '<div align=\'center\'>'.$pdf->getHtml()->getPage($pageNumber)."</div>";
-//        foreach ($pdf->getHtml()->getAllPages() as $page) {
-//            $message = "<div align='center'>";
-//            $message .= $page . "<br>";
-//            $message .= "</div>";
-//        }
-//        return $message;
+        //Lấy nội dung theo trang đổi thành lấy tất cả các trang
+        // chỉnh sửa format chung ở đây    
+//         return '<div align=\'center\'>'.$pdf->getHtml()->getPage($pageNumber)."</div>";
+       foreach ($pdf->getHtml()->getAllPages() as $page) {
+           $message = "<div align='center'>";
+           $message .= $page . "<br>";
+           $message .= "</div>";
+       }
+       return $message;
     }
 
     public function convertText($id, $bookmark)
