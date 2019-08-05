@@ -228,7 +228,6 @@ class PageController extends Controller
             $urlFileName = urldecode($urlFileName);
             $pdf = new Pdf($urlFileName, [
                 'clearAfter' => false,
-                'generate' => ['singlePage' => true],
                 'outputDir' => storage_path('upload/content'), // thư mục output của file html
             ]);
 
@@ -251,6 +250,7 @@ class PageController extends Controller
 //         }
         //Lấy nội dung theo trang đổi thành lấy tất cả các trang
         // chỉnh sửa format chung ở đây    
+        $message = '';
        foreach ($pdf->getHtml()->getAllPages() as $page) {
            $message = "<div align='center'>";
            $message .= $page . "<br>";
